@@ -8,6 +8,7 @@ numpy = "*"
 opencv-contrib-python = "*"
 python-dotenv = "*"
 argparse = "*"
+scipy = "*"
 
 [dev-packages]
 
