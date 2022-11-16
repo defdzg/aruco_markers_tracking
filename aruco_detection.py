@@ -12,7 +12,7 @@ import time
 from dotenv import load_dotenv
 from scipy.spatial.transform import Rotation as R
 
-# ArUco markers dictionarie to use
+# ArUco markers dictionary to use
 DICT = cv.aruco.DICT_4X4_50
 # Grounded marker to be set as reference
 REF_MARKER = 0
