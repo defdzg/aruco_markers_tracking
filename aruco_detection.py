@@ -12,22 +12,26 @@ import time
 from dotenv import load_dotenv
 from scipy.spatial.transform import Rotation as R
 
+# ArUco markers dictionarie to use
 DICT = cv.aruco.DICT_4X4_50
+# Grounded marker to be set as reference
 REF_MARKER = 0
+# List to save identified markers location
 markersPose =  [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
 def draw_frame_markers(corners, ids, rejected, frame, mtx, dist):
     
     if len(corners) > 0:
         ids = ids.flatten()
+        # If the reference marker is not detected, no other operations are performed
         if REF_MARKER in ids:
             for (markerCorner, markerID) in zip(corners, ids):  
                 if markerID < len(markersPose):
-                    # Get individual marker corners
+                    # Estimate individual pose for single markers according to the detected corners
                     rvec, tvec, _ = cv.aruco.estimatePoseSingleMarkers(markerCorner, 0.023, mtx, dist)
+                    # Draw xyz frames to identify rotation
                     cv.drawFrameAxes(frame, mtx, dist, rvec, tvec, 0.01)
-                    
-                    # RPY angles
+                    # RPY angles computing
                     rotM = np.zeros(shape=(3,3))
                     cv.Rodrigues(rvec[0], rotM, jacobian = 0)
                     r = R.from_matrix(rotM)
@@ -35,9 +39,9 @@ def draw_frame_markers(corners, ids, rejected, frame, mtx, dist):
                     yaw = round(angles[0], 1)
                     roll = round(angles[1], 1)
                     pitch = round(angles[2], 1)
-                    corners = markerCorner.reshape((4, 2))
                     
                     # Corners coordinates
+                    corners = markerCorner.reshape((4, 2))
                     (topLeft, topRight, bottomRight, bottomLeft) = corners
                     
                     topRight = (int(topRight[0]), int(topRight[1]))
@@ -51,7 +55,7 @@ def draw_frame_markers(corners, ids, rejected, frame, mtx, dist):
                     cv.line(frame, bottomRight, bottomLeft, (0, 255, 0), 2)
                     cv.line(frame, bottomLeft, topLeft, (0, 255, 0), 2)
                     
-                    # Compute marker center coordinates
+                    # Compute marker center coordinates and display it's ID
                     cX = int((topLeft[0] + bottomRight[0]) / 2.0)
                     cY = int((topLeft[1] + bottomRight[1]) / 2.0)
                     cv.putText(frame, 
@@ -62,10 +66,13 @@ def draw_frame_markers(corners, ids, rejected, frame, mtx, dist):
                     (0, 255, 0),
                     2)
                     
+                    # Save current marker location and pose in a list to be operated
                     markersPose[markerID] = [cX, cY, yaw]
 
+            # If the three markers are detected, operations are performed
             if len(ids) == len(markersPose):
-            
+                
+                # Reference markers coordinates are subtracted from the other marker coordinates
                 markersPose[1][0] -= markersPose[0][0]
                 markersPose[1][1] -= markersPose[0][1]
                 markersPose[2][0] -= markersPose[0][0]
@@ -74,8 +81,9 @@ def draw_frame_markers(corners, ids, rejected, frame, mtx, dist):
                 markersPose[0][0] = 0
                 markersPose[0][1] = 0
                 
+                # Corrected markers pose is printed in CLI
                 print(markersPose)
-
+                
     return frame
 
 # Read existing camera calibration parameters
