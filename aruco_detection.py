@@ -1,6 +1,6 @@
 # aruco_detection.py
 
-# python aruco_detection.py --dict DICT_6X6_50
+# python aruco_detection.py
 
 # Dependencies
 import cv2 as cv
@@ -21,7 +21,7 @@ markersPose =  [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
 def draw_frame_markers(corners, ids, rejected, frame, mtx, dist):
     
-    if len(corners) > 0:
+    if len(corners) > 0:s
         ids = ids.flatten()
         # If the reference marker is not detected, no other operations are performed
         if REF_MARKER in ids:
