@@ -57,7 +57,7 @@ def calibration(folder, model, rows, columns):
 
     for fname in images:
         
-        # The image is converted to grayscale
+        # Convert current frame to grayscale
         img = cv.imread(fname)
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
@@ -67,7 +67,7 @@ def calibration(folder, model, rows, columns):
 
         if ret == True:
             objpoints.append(objp)
-            # Increase the accuracy using cornerSubPix()
+            # Increase the detection accuracy using cornerSubPix()
             corners2 = cv.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
             imgpoints.append(corners)
 
@@ -106,6 +106,7 @@ def arguments():
 
     return parser.parse_args()
 
+# Main
 def main():
     
     # Set required arguments
@@ -134,7 +135,7 @@ def main():
         else:
             print("There are no calibration photos to use. Run a new calibration procedure using the flag '--new true'.")    
 
-# entrypoint
+# Entrypoint
 if __name__ == "__main__":
     
     main()
